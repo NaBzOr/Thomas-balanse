@@ -38,6 +38,12 @@ class SeeSawApp:
         if WeightDiff < -50:
             WeightDiff = -50
 
+
+        if WeightLeft > WeightRight:
+            WeightDiff = 50
+        elif WeightLeft < WeightRight:
+            WeightDiff = -50
+
         # Seesaw base
         self.canvas.create_line(100, 525 + WeightDiff , 700, 525 + (WeightDiff * -1), width=5)
         
@@ -101,11 +107,43 @@ class SeeSawApp:
         
         confirm_button = tk.Button(self.root, text="Confirm", command=self.confirm_removal)
         confirm_button.pack(side=tk.LEFT)
-        
+
+        remove_all_button = tk.Button(self.root, text="Slett alt", command=self.remove_all)
+        remove_all_button.pack(side=tk.LEFT)
+
+        hide_weight_button = tk.Button(self.root, text="Skjul vekt", command=self.hide_weight)
+        hide_weight_button.pack(side=tk.LEFT)
+
         self.canvas.bind("<Button-1>", self.toggle_selection)
         self.canvas.bind("<Button-3>", self.toggle_selection)
         self.canvas.bind_all("<Delete>", self.confirm_removal)
     
+    def remove_all(self):
+        items_to_remove = [item for item in self.canvas.find_all()]
+        for item in items_to_remove:
+
+            ItemCoords = self.canvas.coords(item)
+
+            if self.canvas.type(item) == 'oval':
+                if ItemCoords[2] < 350:     # Hvis elemtentet er til venstre for senter av vippa
+                    _ = self.left_circles.pop()
+                else:
+                    _ = self.right_circles.pop()
+
+            elif self.canvas.type(item) == 'rectangle':
+                if ItemCoords[2] < 350:     # Hvis elemtentet er til venstre for senter av vippa
+                    _ = self.left_boxes.pop()
+                else:
+                    _ = self.right_boxes.pop()
+        self.update_seesaw()
+
+    def hide_weight(self):
+        if self.circleWeightEntry.winfo_x() < 0:
+            self.circleWeightEntry.place(x=100)
+        else:
+            self.circleWeightEntry.place(x=-100)
+        self.circleWeightEntry.pack_forget()
+
     def CheckWeights(self, event) -> bool:
         self.circles_weight = self.circleWeightEntry.get()
         self.boxes_weight = self.boxWeightEntry.get()
