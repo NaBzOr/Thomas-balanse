@@ -138,11 +138,11 @@ class SeeSawApp:
         self.update_seesaw()
 
     def hide_weight(self):
-        if self.circleWeightEntry.winfo_x() < 0:
-            self.circleWeightEntry.place(x=100)
+        if self.boxWeightEntry.winfo_x() < 0:
+            self.boxWeightEntry.place(x=100)
         else:
-            self.circleWeightEntry.place(x=-100)
-        self.circleWeightEntry.pack_forget()
+            self.boxWeightEntry.place(x=-100)
+        self.boxWeightEntry.pack_forget()
 
     def CheckWeights(self, event) -> bool:
         self.circles_weight = self.circleWeightEntry.get()
