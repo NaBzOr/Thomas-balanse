@@ -50,15 +50,15 @@ class SeeSawApp:
             WeightDiff = -50
 
         # Seesaw base
-        self.canvas.create_line(100, 525 + WeightDiff , 700, 525 + (WeightDiff * -1), width=5)
+        self.canvas.create_line(188, 525 + WeightDiff , 613, 525 + (WeightDiff * -1), width=5)
         
 
         OffsetPlateu = 0
 
         if WeightDiff > 0:
-            OffsetPlateu = 35
+            OffsetPlateu = 50
         if WeightDiff < 0:
-            OffsetPlateu = -35
+            OffsetPlateu = -50
 
         # Lag platå venstre og høyre side
         self.canvas.create_line(190, 525 + OffsetPlateu, 190, 490 + OffsetPlateu, width=5)  # Strek rett opp
