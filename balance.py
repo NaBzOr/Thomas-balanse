@@ -52,6 +52,22 @@ class SeeSawApp:
         # Seesaw base
         self.canvas.create_line(100, 525 + WeightDiff , 700, 525 + (WeightDiff * -1), width=5)
         
+
+        OffsetPlateu = 0
+
+        if WeightDiff > 0:
+            OffsetPlateu = 35
+        if WeightDiff < 0:
+            OffsetPlateu = -35
+
+        # Lag platå venstre og høyre side
+        self.canvas.create_line(190, 525 + OffsetPlateu, 190, 490 + OffsetPlateu, width=5)  # Strek rett opp
+        self.canvas.create_line(100, 490 + OffsetPlateu, 280, 490 + OffsetPlateu, width=5)  # Platå
+
+        self.canvas.create_line(610, 525 + OffsetPlateu * -1, 610, 490 + OffsetPlateu * -1, width=5) # Strek rett opp
+        self.canvas.create_line(520, 490 + OffsetPlateu * -1, 700, 490 + OffsetPlateu * -1, width=5) # Platå
+
+
         # 'Er-lik' eller 'Er ulik' tegn over vippa
         sign = '='
         if self.WeightLeft != self.WeightRight:
@@ -63,10 +79,10 @@ class SeeSawApp:
         
         # Left side boxes
         for i in range(len(self.left_boxes)):
-            y = 500 - i * 40
+            y = 470 - (i * 40)
             
-            self.canvas.create_rectangle(100, (y - 20) + WeightDiff, 175, (y + 20) + WeightDiff, fill='green')
-            self.canvas.create_text(137, y + WeightDiff, text="X", fill="black", font=('Helvetica 15 bold'))
+            self.canvas.create_rectangle(100, (y - 20) + OffsetPlateu, 175, (y + 20) + OffsetPlateu, fill='green')
+            self.canvas.create_text(137, y + OffsetPlateu, text="X", fill="black", font=('Helvetica 15 bold'))
             
         # Left side circles
         for i in range(len(self.left_circles)):
@@ -74,15 +90,15 @@ class SeeSawApp:
             offset_y = 40 * (i // 2)
             offset_x = 40 * (i % 2)
 
-            y = 500
-            self.canvas.create_oval(200 + offset_x, (y - 20 - offset_y) + WeightDiff, 240 + offset_x, (y + 20 - offset_y) + WeightDiff, fill='yellow')
+            y = 470
+            self.canvas.create_oval(200 + offset_x, (y - 20 - offset_y) + OffsetPlateu, 240 + offset_x, (y + 20 - offset_y) + OffsetPlateu, fill='yellow')
 
 
         # Right side boxes
         for i in range(len(self.right_boxes)):
-            y = 500 - i * 40
-            self.canvas.create_rectangle(625, (y - 20) + (WeightDiff * -1), 700, (y + 20) + (WeightDiff * -1), fill='green')
-            self.canvas.create_text(662, y  + (WeightDiff * -1), text="X", fill="black", font=('Helvetica 15 bold'))
+            y = 470 - i * 40
+            self.canvas.create_rectangle(625, (y - 20) + (OffsetPlateu * -1), 700, (y + 20) + (OffsetPlateu * -1), fill='green')
+            self.canvas.create_text(662, y  + (OffsetPlateu * -1), text="X", fill="black", font=('Helvetica 15 bold'))
             
         # Right side circles
         for i in range(len(self.right_circles)):
@@ -90,8 +106,8 @@ class SeeSawApp:
             offset_y = 40 * (i // 2)
             offset_x = 40 * (i % 2)
 
-            y = 500
-            self.canvas.create_oval(525 + offset_x, (y - 20 - offset_y)  + (WeightDiff * -1), 565 + offset_x, (y + 20 - offset_y)  + (WeightDiff * -1), fill='yellow')
+            y = 470
+            self.canvas.create_oval(525 + offset_x, (y - 20 - offset_y)  + (OffsetPlateu * -1), 565 + offset_x, (y + 20 - offset_y)  + (OffsetPlateu * -1), fill='yellow')
 
         if self.ShowWeightSums:
             self.canvas.create_text(200, 220, text="Vekt venstre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
