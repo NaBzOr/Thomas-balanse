@@ -1,6 +1,6 @@
-import math
+from pathlib import Path
 import tkinter as tk
-
+from tkinter import simpledialog
 
 class SeeSawApp:
     def __init__(self, root):
@@ -20,6 +20,9 @@ class SeeSawApp:
         self.circles_weightStringVar = tk.StringVar(value=self.circles_weight)
         self.boxes_weightStringVar = tk.StringVar(value=self.boxes_weight)
 
+        self.WeightLeft = 0
+        self.WeightRight = 0
+
         self.create_seesaw()
         self.create_buttons()
         self.create_fields()
@@ -27,11 +30,11 @@ class SeeSawApp:
     def create_seesaw(self):
 
         # Regn ut vekt på begge sider av vippa
-        WeightLeft = int(self.circles_weight) * len(self.left_circles) + int(self.boxes_weight) * len(self.left_boxes)
-        WeightRight = int(self.circles_weight) * len(self.right_circles) + int(self.boxes_weight) * len(self.right_boxes)
+        self.WeightLeft = int(self.circles_weight) * len(self.left_circles) + int(self.boxes_weight) * len(self.left_boxes)
+        self.WeightRight = int(self.circles_weight) * len(self.right_circles) + int(self.boxes_weight) * len(self.right_boxes)
     
         # Regn ut forhold mellom vektene
-        WeightDiff = WeightLeft - WeightRight
+        WeightDiff = self.WeightLeft - self.WeightRight
         
         if WeightDiff > 50:
             WeightDiff = 50
@@ -39,14 +42,20 @@ class SeeSawApp:
             WeightDiff = -50
 
 
-        if WeightLeft > WeightRight:
+        if self.WeightLeft > self.WeightRight:
             WeightDiff = 50
-        elif WeightLeft < WeightRight:
+        elif self.WeightLeft < self.WeightRight:
             WeightDiff = -50
 
         # Seesaw base
         self.canvas.create_line(100, 525 + WeightDiff , 700, 525 + (WeightDiff * -1), width=5)
         
+        # 'Er-lik' eller 'Er ulik' tegn over vippa
+        sign = '='
+        if self.WeightLeft != self.WeightRight:
+            sign = '≠'
+        self.canvas.create_text(400, 480, text=sign, fill="black", font=('Helvetica 100'))
+
         # Seesaw triangle
         self.canvas.create_polygon(350, 550, 450, 550, 400, 525, fill='brown')
         
@@ -84,8 +93,8 @@ class SeeSawApp:
 
         self.canvas.create_text(200, 220, text="Vekt venstre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
         self.canvas.create_text(600, 220, text="Vekt høyre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
-        self.canvas.create_text(200, 240, text=str(WeightLeft), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
-        self.canvas.create_text(600, 240, text=str(WeightRight), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
+        self.canvas.create_text(200, 240, text=str(self.WeightLeft), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
+        self.canvas.create_text(600, 240, text=str(self.WeightRight), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
 
 
     
@@ -117,26 +126,63 @@ class SeeSawApp:
         self.canvas.bind("<Button-1>", self.toggle_selection)
         self.canvas.bind("<Button-3>", self.toggle_selection)
         self.canvas.bind_all("<Delete>", self.confirm_removal)
-    
-    def remove_all(self):
-        items_to_remove = [item for item in self.canvas.find_all()]
-        for item in items_to_remove:
 
+        # Dele-knapp
+        btn = tk.Button(self.root, text='Del', bd=5, command=self.Del)
+        btn.place(x=650, y=50, width=50)
+    
+    def Del(self):
+        DivideBy = simpledialog.askinteger(title="Del på nummer", prompt='Hvilket nummer vil du dele på?', minvalue=1)
+        NumRightCircles = len(self.right_circles) // DivideBy
+        NumLeftCircles = len(self.left_circles) // DivideBy
+
+        NumRightBoxes = len(self.right_boxes) // DivideBy
+        NumLeftBoxes = len(self.left_boxes) // DivideBy
+
+        # Marker bokser og sirkler på hver side. Starter øverst, håper jeg
+        self.remove_selected()
+        
+        allItems = [item for item in self.canvas.find_all()]
+
+        allItems.sort(reverse=True)
+        MarkedLeftCircles = 0
+        MarkedRightCircles = 0
+        MarkedLeftBoxes = 0
+        MarkedRightBoxes = 0
+
+        for item in allItems:
+            
             ItemCoords = self.canvas.coords(item)
 
             if self.canvas.type(item) == 'oval':
                 if ItemCoords[2] < 350:     # Hvis elemtentet er til venstre for senter av vippa
-                    _ = self.left_circles.pop()
+                    if MarkedLeftCircles != NumLeftCircles:
+                        self.canvas.itemconfig(item, fill='red')
+                        MarkedLeftCircles += 1
+
                 else:
-                    _ = self.right_circles.pop()
+                    if MarkedRightCircles != NumRightCircles:
+                        self.canvas.itemconfig(item, fill='red')
+                        MarkedRightCircles += 1
 
             elif self.canvas.type(item) == 'rectangle':
                 if ItemCoords[2] < 350:     # Hvis elemtentet er til venstre for senter av vippa
-                    _ = self.left_boxes.pop()
+                    if MarkedLeftBoxes != NumLeftBoxes:
+                        self.canvas.itemconfig(item, fill='red')
+                        MarkedLeftBoxes += 1
                 else:
-                    _ = self.right_boxes.pop()
-        self.update_seesaw()
+                    if MarkedRightBoxes != NumRightBoxes:
+                        self.canvas.itemconfig(item, fill='red')
+                        MarkedRightBoxes += 1
 
+    def remove_all(self):
+        self.left_boxes.clear()
+        self.left_circles.clear()
+        self.right_boxes.clear()
+        self.right_circles.clear()
+        self.update_seesaw()
+        return
+    
     def hide_weight(self):
         if self.boxWeightEntry.winfo_x() < 0:
             self.boxWeightEntry.place(x=100)
