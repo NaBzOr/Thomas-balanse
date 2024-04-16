@@ -23,6 +23,8 @@ class SeeSawApp:
         self.WeightLeft = 0
         self.WeightRight = 0
 
+        self.ShowWeightSums = False
+
         self.create_seesaw()
         self.create_buttons()
         self.create_fields()
@@ -91,13 +93,17 @@ class SeeSawApp:
             y = 500
             self.canvas.create_oval(525 + offset_x, (y - 20 - offset_y)  + (WeightDiff * -1), 565 + offset_x, (y + 20 - offset_y)  + (WeightDiff * -1), fill='yellow')
 
-        self.canvas.create_text(200, 220, text="Vekt venstre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
-        self.canvas.create_text(600, 220, text="Vekt høyre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
-        self.canvas.create_text(200, 240, text=str(self.WeightLeft), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
-        self.canvas.create_text(600, 240, text=str(self.WeightRight), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
+        if self.ShowWeightSums:
+            self.canvas.create_text(200, 220, text="Vekt venstre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
+            self.canvas.create_text(600, 220, text="Vekt høyre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
+            self.canvas.create_text(200, 240, text=str(self.WeightLeft), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
+            self.canvas.create_text(600, 240, text=str(self.WeightRight), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
 
 
-    
+    def hide_weight_sums(self):
+        self.ShowWeightSums = not self.ShowWeightSums
+        self.update_seesaw()
+
     def create_buttons(self):
         add_circle_left_button = tk.Button(self.root, text="Add Circle (Left)", command=lambda: self.add_shape('circle', 'left'))
         add_circle_left_button.pack(side=tk.LEFT)
@@ -120,8 +126,11 @@ class SeeSawApp:
         remove_all_button = tk.Button(self.root, text="Slett alt", command=self.remove_all)
         remove_all_button.pack(side=tk.LEFT)
 
-        hide_weight_button = tk.Button(self.root, text="Skjul vekt", command=self.hide_weight)
+        hide_weight_button = tk.Button(self.root, text="Skjul vekt input", command=self.hide_weight)
         hide_weight_button.pack(side=tk.LEFT)
+
+        hide_weight_sums_button = tk.Button(self.root, text="Vis/skjul vekter", command=self.hide_weight_sums)
+        hide_weight_sums_button.pack(side=tk.LEFT)
 
         self.canvas.bind("<Button-1>", self.toggle_selection)
         self.canvas.bind("<Button-3>", self.toggle_selection)
@@ -212,9 +221,6 @@ class SeeSawApp:
         self.boxWeightLabel.place(x=0, y= 25)
         self.boxWeightEntry.place(x=100, y= 25)
 
-        self.canvas.create_text(200, 220, text="Vekt venstre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
-        self.canvas.create_text(600, 220, text="Vekt høyre", fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
-        self.canvas.create_text(200, 240, text=str((int(self.circles_weight) * len(self.left_circles)) + (int(self.boxes_weight) * len(self.left_boxes))), fill="black", font=('Helvetica 15 bold'), justify=tk.CENTER )
         
     def add_shape(self, shape, side):
         if shape == 'circle':
