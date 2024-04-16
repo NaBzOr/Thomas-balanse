@@ -133,11 +133,11 @@ class SeeSawApp:
     
     def Del(self):
         DivideBy = simpledialog.askinteger(title="Del på nummer", prompt='Hvilket nummer vil du dele på?', minvalue=1)
-        NumRightCircles = len(self.right_circles) // DivideBy
-        NumLeftCircles = len(self.left_circles) // DivideBy
+        NumRightCircles = len(self.right_circles) - (len(self.right_circles) // DivideBy)
+        NumLeftCircles = len(self.left_circles) - (len(self.left_circles) // DivideBy)
 
-        NumRightBoxes = len(self.right_boxes) // DivideBy
-        NumLeftBoxes = len(self.left_boxes) // DivideBy
+        NumRightBoxes = len(self.right_boxes) - (len(self.right_boxes) // DivideBy)
+        NumLeftBoxes = len(self.left_boxes) - (len(self.left_boxes) // DivideBy)
 
         # Marker bokser og sirkler på hver side. Starter øverst, håper jeg
         self.remove_selected()
